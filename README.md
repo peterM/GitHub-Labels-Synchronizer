@@ -1,4 +1,4 @@
-# GitHub-Labels-Synchronizer
+# GitHub Labels Synchronizer
 Synchronize GitHub labels across organization repositories
 
 ## For what is this good for
