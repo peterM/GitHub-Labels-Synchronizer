@@ -38,7 +38,7 @@ namespace MalikP.GitHub.LabelSynchronizer
             if (await parameterStore.InitializeAsync(args))
             {
                 ISynchronizer Synchronizer = new DefaultSynchronizer(new ConsoleLogger(), await parameterStore.QueryParameterAsync<UriParameter>(), await parameterStore.QueryParameterAsync<OautTokenParameter>());
-                await Synchronizer.SynchroniseAsync(await parameterStore.QueryParameterAsync<OrganisationNameParameter>(), await parameterStore.QueryParameterAsync<RepositoryNameParameter>());
+                await Synchronizer.SynchronizeAsync(await parameterStore.QueryParameterAsync<OrganisationNameParameter>(), await parameterStore.QueryParameterAsync<RepositoryNameParameter>());
             }
             else
             {
