@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2018 Peter M.
 // 
-// File: OrganisationNameParameter.cs 
+// File: SourceOrganizationNameParameter.cs 
 // Company: MalikP.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
@@ -21,11 +21,12 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 namespace MalikP.GitHub.LabelSynchronizer.Parameters
 {
-    public sealed class OrganisationNameParameter : Parameter<string>
+    public sealed class SourceOrganizationNameParameter : OrganizationNameParameter
     {
-        public OrganisationNameParameter(string value) : base(value)
+        public SourceOrganizationNameParameter(string value) : base(value)
         {
         }
     }

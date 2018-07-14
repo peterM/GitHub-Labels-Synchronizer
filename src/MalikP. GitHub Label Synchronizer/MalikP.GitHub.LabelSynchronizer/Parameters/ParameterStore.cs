@@ -21,6 +21,7 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,8 +47,9 @@ namespace MalikP.GitHub.LabelSynchronizer.Parameters
             {
                 await CreateUriParameterAsync(args);
                 await CreateOautTokebParameterAsync(args);
-                await CreateOrganisationNameParameterAsync(args);
+                await CreateSourceOrganizationNameParameterAsync(args);
                 await CreateSourceRepositoryNameParameterAsync(args);
+                await CreateTargetOrganizationNameParameterAsync(args);
                 await CreateTargetRepositoryNameParameterAsync(args);
 
                 result = true;
@@ -56,12 +58,23 @@ namespace MalikP.GitHub.LabelSynchronizer.Parameters
             return result;
         }
 
-        private Task CreateOrganisationNameParameterAsync(string[] args)
+        private Task CreateSourceOrganizationNameParameterAsync(string[] args)
         {
-            string organization = ExtractParamValue(args, "-org=");
+            string organization = ExtractParamValue(args, "-source-org=");
             if (!string.IsNullOrWhiteSpace(organization))
             {
-                _parameters.Add(new OrganisationNameParameter(organization));
+                _parameters.Add(new SourceOrganizationNameParameter(organization));
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private Task CreateTargetOrganizationNameParameterAsync(string[] args)
+        {
+            string organization = ExtractParamValue(args, "-target-org=");
+            if (!string.IsNullOrWhiteSpace(organization))
+            {
+                _parameters.Add(new TargetOrganizationNameParameter(organization));
             }
 
             return Task.CompletedTask;
@@ -129,11 +142,12 @@ namespace MalikP.GitHub.LabelSynchronizer.Parameters
             return args.SingleOrDefault(d => d.StartsWith(paramName, StringComparison.InvariantCultureIgnoreCase));
         }
 
+        // TODO: need to rework parameter validation
         private Task<bool> ValidateAsync(string[] args)
         {
             bool result = false;
 
-            if (args.Length == 4 || args.Length == 5)
+            if (args.Length == 4 || args.Length == 5 || args.Length == 6)
             {
                 result = true;
             }

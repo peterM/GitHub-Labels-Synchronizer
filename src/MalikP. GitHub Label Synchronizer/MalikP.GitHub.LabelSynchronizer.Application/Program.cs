@@ -21,6 +21,7 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 using System;
 using System.Threading.Tasks;
 using MalikP.GitHub.LabelSynchronizer.Loggers;
@@ -45,11 +46,13 @@ namespace MalikP.GitHub.LabelSynchronizer
 
                 if (targetRepositoryNameParameter == null)
                 {
-                    await Synchronizer.SynchronizeAsync(await parameterStore.QueryParameterAsync<OrganisationNameParameter>(), await parameterStore.QueryParameterAsync<SourceRepositoryNameParameter>());
+                    await Synchronizer.SynchronizeAsync(await parameterStore.QueryParameterAsync<OrganizationNameParameter>(), await parameterStore.QueryParameterAsync<SourceRepositoryNameParameter>());
                 }
                 else
                 {
-                    await Synchronizer.SynchronizeAsync(await parameterStore.QueryParameterAsync<OrganisationNameParameter>(), await parameterStore.QueryParameterAsync<SourceRepositoryNameParameter>(), targetRepositoryNameParameter);
+                    var sourceOrganizationNameParameter = await parameterStore.QueryParameterAsync<SourceOrganizationNameParameter>();
+                    OrganizationNameParameter targetOrganizationParameter = (OrganizationNameParameter)await parameterStore.QueryParameterAsync<TargetOrganizationNameParameter>() ?? sourceOrganizationNameParameter;
+                    await Synchronizer.SynchronizeAsync(sourceOrganizationNameParameter, await parameterStore.QueryParameterAsync<SourceRepositoryNameParameter>(), targetOrganizationParameter, targetRepositoryNameParameter);
                 }
             }
             else

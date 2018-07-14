@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2018 Peter M.
 // 
-// File: UriParameter.cs 
+// File: TargetOrganizationNameParameter.cs 
 // Company: MalikP.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
@@ -22,13 +22,11 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
-
 namespace MalikP.GitHub.LabelSynchronizer.Parameters
 {
-    public sealed class UriParameter : Parameter<Uri>
+    public sealed class TargetOrganizationNameParameter : OrganizationNameParameter
     {
-        public UriParameter(Uri value) : base(value)
+        public TargetOrganizationNameParameter(string value) : base(value)
         {
         }
     }

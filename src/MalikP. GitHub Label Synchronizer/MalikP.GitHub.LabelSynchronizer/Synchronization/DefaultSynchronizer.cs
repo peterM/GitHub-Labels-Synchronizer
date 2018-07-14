@@ -21,6 +21,7 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace MalikP.GitHub.LabelSynchronizer.Synchronization
         {
         }
 
-        public override async Task SynchronizeAsync(OrganisationNameParameter organizationLoginNameParameter, RepositoryNameParameter repositoryNameParameter)
+        public override async Task SynchronizeAsync(OrganizationNameParameter organizationLoginNameParameter, RepositoryNameParameter repositoryNameParameter)
         {
             Repository sourceRepository = await GitHubClient.Repository.Get(organizationLoginNameParameter.Value, repositoryNameParameter.Value);
             IReadOnlyList<Label> currentRepositoryLabels = await GetRepositoryLabels(sourceRepository);
@@ -70,7 +71,7 @@ namespace MalikP.GitHub.LabelSynchronizer.Synchronization
             WriteLog($"Synchronization of labels from source repo: '{sourceRepository.Id} - {sourceRepository.Name}'", ConsoleColor.DarkYellow);
         }
 
-        public override async Task SynchronizeAsync(OrganisationNameParameter organizationLoginNameParameter, RepositoryNameParameter sourceRepositoryNameParameter, RepositoryNameParameter targetRepositoryNameParameter)
+        public override async Task SynchronizeAsync(OrganizationNameParameter sourceOrganizationLoginNameParameter, RepositoryNameParameter sourceRepositoryNameParameter, OrganizationNameParameter targetOrganizationLoginNameParameter, RepositoryNameParameter targetRepositoryNameParameter)
         {
             if (string.Equals(sourceRepositoryNameParameter.Value, targetRepositoryNameParameter.Value))
             {
@@ -78,8 +79,8 @@ namespace MalikP.GitHub.LabelSynchronizer.Synchronization
                 return;
             }
 
-            Repository sourceRepository = await GitHubClient.Repository.Get(organizationLoginNameParameter.Value, sourceRepositoryNameParameter.Value);
-            Repository targetRepository = await GitHubClient.Repository.Get(organizationLoginNameParameter.Value, targetRepositoryNameParameter.Value);
+            Repository sourceRepository = await GitHubClient.Repository.Get(sourceOrganizationLoginNameParameter.Value, sourceRepositoryNameParameter.Value);
+            Repository targetRepository = await GitHubClient.Repository.Get(targetOrganizationLoginNameParameter.Value, targetRepositoryNameParameter.Value);
 
             IReadOnlyList<Label> sourceRepositoryLabels = await GetRepositoryLabels(sourceRepository);
             IReadOnlyList<Label> targetRepositoryLabels = await GetRepositoryLabels(targetRepository);
