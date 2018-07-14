@@ -47,7 +47,8 @@ namespace MalikP.GitHub.LabelSynchronizer.Parameters
                 await CreateUriParameterAsync(args);
                 await CreateOautTokebParameterAsync(args);
                 await CreateOrganisationNameParameterAsync(args);
-                await CreateRepositoryNameParameterAsync(args);
+                await CreateSourceRepositoryNameParameterAsync(args);
+                await CreateTargetRepositoryNameParameterAsync(args);
 
                 result = true;
             }
@@ -57,16 +58,33 @@ namespace MalikP.GitHub.LabelSynchronizer.Parameters
 
         private Task CreateOrganisationNameParameterAsync(string[] args)
         {
-            string token = ExtractParamValue(args, "-org=");
-            _parameters.Add(new OrganisationNameParameter(token));
+            string organization = ExtractParamValue(args, "-org=");
+            if (!string.IsNullOrWhiteSpace(organization))
+            {
+                _parameters.Add(new OrganisationNameParameter(organization));
+            }
 
             return Task.CompletedTask;
         }
 
-        private Task CreateRepositoryNameParameterAsync(string[] args)
+        private Task CreateSourceRepositoryNameParameterAsync(string[] args)
         {
-            string token = ExtractParamValue(args, "-repo=");
-            _parameters.Add(new RepositoryNameParameter(token));
+            string repoName = ExtractParamValue(args, "-source-repo=");
+            if (!string.IsNullOrWhiteSpace(repoName))
+            {
+                _parameters.Add(new SourceRepositoryNameParameter(repoName));
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private Task CreateTargetRepositoryNameParameterAsync(string[] args)
+        {
+            string repoName = ExtractParamValue(args, "-target-repo=");
+            if (!string.IsNullOrWhiteSpace(repoName))
+            {
+                _parameters.Add(new TargetRepositoryNameParameter(repoName));
+            }
 
             return Task.CompletedTask;
         }
@@ -74,7 +92,11 @@ namespace MalikP.GitHub.LabelSynchronizer.Parameters
         private Task CreateOautTokebParameterAsync(string[] args)
         {
             string token = ExtractParamValue(args, "-token=");
-            _parameters.Add(new OautTokenParameter(token));
+
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                _parameters.Add(new OautTokenParameter(token));
+            }
 
             return Task.CompletedTask;
         }
@@ -82,7 +104,11 @@ namespace MalikP.GitHub.LabelSynchronizer.Parameters
         private Task CreateUriParameterAsync(string[] args)
         {
             string uri = ExtractParamValue(args, "-uri=");
-            _parameters.Add(new UriParameter(new Uri(uri)));
+
+            if (!string.IsNullOrWhiteSpace(uri))
+            {
+                _parameters.Add(new UriParameter(new Uri(uri)));
+            }
 
             return Task.CompletedTask;
         }
@@ -95,19 +121,19 @@ namespace MalikP.GitHub.LabelSynchronizer.Parameters
 
         private static string GetParamValue(string param)
         {
-            return param.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries).Last();
+            return param?.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries).Last();
         }
 
         private static string GetParam(string[] args, string paramName)
         {
-            return args.Single(d => d.StartsWith(paramName, StringComparison.InvariantCultureIgnoreCase));
+            return args.SingleOrDefault(d => d.StartsWith(paramName, StringComparison.InvariantCultureIgnoreCase));
         }
 
         private Task<bool> ValidateAsync(string[] args)
         {
             bool result = false;
 
-            if (args.Length == 4)
+            if (args.Length == 4 || args.Length == 5)
             {
                 result = true;
             }
@@ -118,7 +144,7 @@ namespace MalikP.GitHub.LabelSynchronizer.Parameters
         public Task<T> QueryParameterAsync<T>()
             where T : IParameter
         {
-            return Task.FromResult(_parameters.OfType<T>().First());
+            return Task.FromResult(_parameters.OfType<T>().FirstOrDefault());
         }
     }
 }

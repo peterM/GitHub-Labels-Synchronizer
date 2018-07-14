@@ -70,6 +70,38 @@ namespace MalikP.GitHub.LabelSynchronizer.Synchronization
             WriteLog($"Synchronization of labels from source repo: '{sourceRepository.Id} - {sourceRepository.Name}'", ConsoleColor.DarkYellow);
         }
 
+        public override async Task SynchronizeAsync(OrganisationNameParameter organizationLoginNameParameter, RepositoryNameParameter sourceRepositoryNameParameter, RepositoryNameParameter targetRepositoryNameParameter)
+        {
+            if (string.Equals(sourceRepositoryNameParameter.Value, targetRepositoryNameParameter.Value))
+            {
+                WriteLog($"Synchronization stopped. Repo '{sourceRepositoryNameParameter.Value}' and '{targetRepositoryNameParameter.Value}' have to be different", ConsoleColor.Red);
+                return;
+            }
+
+            Repository sourceRepository = await GitHubClient.Repository.Get(organizationLoginNameParameter.Value, sourceRepositoryNameParameter.Value);
+            Repository targetRepository = await GitHubClient.Repository.Get(organizationLoginNameParameter.Value, targetRepositoryNameParameter.Value);
+
+            IReadOnlyList<Label> sourceRepositoryLabels = await GetRepositoryLabels(sourceRepository);
+            IReadOnlyList<Label> targetRepositoryLabels = await GetRepositoryLabels(targetRepository);
+
+            if (sourceRepositoryLabels.Any())
+            {
+                foreach (Label labelItem in sourceRepositoryLabels)
+                {
+                    Label existingLabel = targetRepositoryLabels.SingleOrDefault(label => label.Name == labelItem.Name);
+                    if (existingLabel != null)
+                    {
+                        await UpdateLabel(targetRepository, labelItem);
+                        continue;
+                    }
+
+                    await CreateNewLabel(targetRepository, labelItem);
+                }
+            }
+
+            WriteLog($"Synchronization of labels from source repo: '{sourceRepository.Id} - {sourceRepository.Name}'", ConsoleColor.DarkYellow);
+        }
+
         private async Task<IReadOnlyList<Repository>> GetRepositories(Repository repository, Organization organization)
         {
             IReadOnlyList<Repository> repositories = await GitHubClient.Repository

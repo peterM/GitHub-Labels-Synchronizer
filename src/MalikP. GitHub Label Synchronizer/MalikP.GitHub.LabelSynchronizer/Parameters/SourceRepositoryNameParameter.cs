@@ -23,9 +23,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 namespace MalikP.GitHub.LabelSynchronizer.Parameters
 {
-    public abstract class RepositoryNameParameter : Parameter<string>
+    public sealed class SourceRepositoryNameParameter : RepositoryNameParameter
     {
-        protected RepositoryNameParameter(string value)
+        public SourceRepositoryNameParameter(string value)
             : base(value)
         {
         }

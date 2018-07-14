@@ -56,5 +56,6 @@ namespace MalikP.GitHub.LabelSynchronizer.Synchronization
         }
 
         public abstract Task SynchronizeAsync(OrganisationNameParameter organizationLoginNameParameter, RepositoryNameParameter repositoryNameParameter);
+        public abstract Task SynchronizeAsync(OrganisationNameParameter organizationLoginNameParameter, RepositoryNameParameter sourceRepositoryNameParameter, RepositoryNameParameter targetRepositoryNameParameter);
     }
 }

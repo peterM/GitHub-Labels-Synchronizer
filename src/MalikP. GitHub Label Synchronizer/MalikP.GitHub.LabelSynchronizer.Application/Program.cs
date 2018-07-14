@@ -31,14 +31,26 @@ namespace MalikP.GitHub.LabelSynchronizer
 {
     class Program
     {
+        private static IConsoleLogger _logger = new ConsoleLogger();
+
         static async Task Main(string[] args)
         {
             ParameterStore parameterStore = new ParameterStore();
 
             if (await parameterStore.InitializeAsync(args))
             {
-                ISynchronizer Synchronizer = new DefaultSynchronizer(new ConsoleLogger(), await parameterStore.QueryParameterAsync<UriParameter>(), await parameterStore.QueryParameterAsync<OautTokenParameter>());
-                await Synchronizer.SynchronizeAsync(await parameterStore.QueryParameterAsync<OrganisationNameParameter>(), await parameterStore.QueryParameterAsync<RepositoryNameParameter>());
+                ISynchronizer Synchronizer = new DefaultSynchronizer(_logger, await parameterStore.QueryParameterAsync<UriParameter>(), await parameterStore.QueryParameterAsync<OautTokenParameter>());
+
+                TargetRepositoryNameParameter targetRepositoryNameParameter = await parameterStore.QueryParameterAsync<TargetRepositoryNameParameter>();
+
+                if (targetRepositoryNameParameter == null)
+                {
+                    await Synchronizer.SynchronizeAsync(await parameterStore.QueryParameterAsync<OrganisationNameParameter>(), await parameterStore.QueryParameterAsync<SourceRepositoryNameParameter>());
+                }
+                else
+                {
+                    await Synchronizer.SynchronizeAsync(await parameterStore.QueryParameterAsync<OrganisationNameParameter>(), await parameterStore.QueryParameterAsync<SourceRepositoryNameParameter>(), targetRepositoryNameParameter);
+                }
             }
             else
             {
@@ -50,25 +62,29 @@ namespace MalikP.GitHub.LabelSynchronizer
 
         private static Task WriteHelpAsync()
         {
-            Console.ForegroundColor = ConsoleColor.Green;
+            _logger.WriteLog($"{"".PadLeft(20, '#')} HELP { "".PadRight(20, '#')}", ConsoleColor.Green);
 
-            Console.WriteLine($"{"".PadLeft(20, '#')} HELP { "".PadRight(20, '#')}");
+            _logger.WriteLog("Specify github uri (https://github.domain.com/)", ConsoleColor.Green);
+            _logger.WriteLog($"{"".PadLeft(7, ' ')}-uri=<OrganisationName>", ConsoleColor.Green);
 
-            Console.WriteLine("Specify github uri (https://github.domain.com/)");
-            Console.WriteLine($"{"".PadLeft(7, ' ')}-uri=<OrganisationName>");
+            _logger.WriteLog("Specify personal oauth token with rights", ConsoleColor.Green);
+            _logger.WriteLog($"{"".PadLeft(7, ' ')}-token=<personalToken>", ConsoleColor.Green);
 
-            Console.WriteLine("Specify personal oauth token with rights");
-            Console.WriteLine($"{"".PadLeft(7, ' ')}-token=<personalToken>");
+            _logger.WriteLog("Specify organization where you want to sync labels", ConsoleColor.Green);
+            _logger.WriteLog($"{"".PadLeft(7, ' ')}-org=<OrganisationName>", ConsoleColor.Green);
 
-            Console.WriteLine("Specify organisation where you want to sync labels");
-            Console.WriteLine($"{"".PadLeft(7, ' ')}-org=<OrganisationName>");
+            _logger.WriteLog("Specify repository in that organization which will be source of labels", ConsoleColor.Green);
+            _logger.WriteLog($"{"".PadLeft(7, ' ')}-source-repo=<RepositoryName>", ConsoleColor.Green);
 
-            Console.WriteLine("Specify repository in that organiosation which will be source of labels");
-            Console.WriteLine($"{"".PadLeft(7, ' ')}-repo=<RepositoryName>");
+            _logger.WriteLog("Specify repository in that organiosation which will be target and wher labels will be synchronized", ConsoleColor.Green);
+            _logger.WriteLog($"{"".PadLeft(7, ' ')}-target-repo=<RepositoryName>", ConsoleColor.Green);
 
-            Console.WriteLine();
-            Console.WriteLine("Example: ");
-            Console.WriteLine($"{"".PadLeft(7, ' ')} MalikP.GitHub.LabelSynchronizer -uri=https://github.domain.com/ -token=<personalToken> -org=<OrganisationName> -repo=<RepositoryName>");
+            _logger.WriteLog("", ConsoleColor.Green);
+            _logger.WriteLog("Example when we want synchronize labels across all organization repositories: ", ConsoleColor.Green);
+            _logger.WriteLog($"{"".PadLeft(7, ' ')} MalikP.GitHub.LabelSynchronizer -uri=https://github.domain.com/ -token=<personalToken> -org=<OrganisationName> -source-repo=<RepositoryName>", ConsoleColor.Green);
+            _logger.WriteLog("", ConsoleColor.Green);
+            _logger.WriteLog("Example when we want synchronize labels only in specific repository from specific repository: ", ConsoleColor.Green);
+            _logger.WriteLog($"{"".PadLeft(7, ' ')} MalikP.GitHub.LabelSynchronizer -uri=https://github.domain.com/ -token=<personalToken> -org=<OrganisationName> -source-repo=<RepositoryName> -target-repo=<RepositoryName>", ConsoleColor.Green);
 
             Console.ResetColor();
 
