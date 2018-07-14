@@ -7,6 +7,9 @@ Imagine that you have lot of repositories in your account and you want to have i
 ## Technology behind
 This tool is written in .Net Core 2.1 and using `Octokit.Net` accessible [here](https://github.com/octokit/octokit.net) on GitHub 
 
+## GitHub.com, GitHub Enterprise
+Synchronizer working well for cloud `GitHub.com` and also for on-premise version `GitHub Enterprise`. For `GitHub.com` use `-uri=https://github.com/` parameter
+
 ## How to use it
 Open command prompt and execute with **all** parameters.
 
