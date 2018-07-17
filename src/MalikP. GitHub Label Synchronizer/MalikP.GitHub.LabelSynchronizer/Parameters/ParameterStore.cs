@@ -25,7 +25,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MalikP.GitHub.LabelSynchronizer.Parameters
@@ -51,11 +50,23 @@ namespace MalikP.GitHub.LabelSynchronizer.Parameters
                 await CreateSourceRepositoryNameParameterAsync(args);
                 await CreateTargetOrganizationNameParameterAsync(args);
                 await CreateTargetRepositoryNameParameterAsync(args);
+                await CreateStrictFlagParameterAsync(args);
 
                 result = true;
             }
 
             return result;
+        }
+
+        private Task CreateStrictFlagParameterAsync(string[] args)
+        {
+            string strictFlag = ExtractParamValue(args, "-strict=");
+            if (!string.IsNullOrWhiteSpace(strictFlag))
+            {
+                _parameters.Add(new SourceOrganizationNameParameter(strictFlag));
+            }
+
+            return Task.CompletedTask;
         }
 
         private Task CreateSourceOrganizationNameParameterAsync(string[] args)

@@ -43,16 +43,17 @@ namespace MalikP.GitHub.LabelSynchronizer
                 ISynchronizer Synchronizer = new DefaultSynchronizer(_logger, await parameterStore.QueryParameterAsync<UriParameter>(), await parameterStore.QueryParameterAsync<OautTokenParameter>());
 
                 TargetRepositoryNameParameter targetRepositoryNameParameter = await parameterStore.QueryParameterAsync<TargetRepositoryNameParameter>();
+                StrictFlagParameter strictFlagParameter = await parameterStore.QueryParameterAsync<StrictFlagParameter>();
 
                 if (targetRepositoryNameParameter == null)
                 {
-                    await Synchronizer.SynchronizeAsync(await parameterStore.QueryParameterAsync<OrganizationNameParameter>(), await parameterStore.QueryParameterAsync<SourceRepositoryNameParameter>());
+                    await Synchronizer.SynchronizeAsync(await parameterStore.QueryParameterAsync<OrganizationNameParameter>(), await parameterStore.QueryParameterAsync<SourceRepositoryNameParameter>(), strictFlagParameter);
                 }
                 else
                 {
                     var sourceOrganizationNameParameter = await parameterStore.QueryParameterAsync<SourceOrganizationNameParameter>();
                     OrganizationNameParameter targetOrganizationParameter = (OrganizationNameParameter)await parameterStore.QueryParameterAsync<TargetOrganizationNameParameter>() ?? sourceOrganizationNameParameter;
-                    await Synchronizer.SynchronizeAsync(sourceOrganizationNameParameter, await parameterStore.QueryParameterAsync<SourceRepositoryNameParameter>(), targetOrganizationParameter, targetRepositoryNameParameter);
+                    await Synchronizer.SynchronizeAsync(sourceOrganizationNameParameter, await parameterStore.QueryParameterAsync<SourceRepositoryNameParameter>(), targetOrganizationParameter, targetRepositoryNameParameter, strictFlagParameter);
                 }
             }
             else
@@ -72,6 +73,9 @@ namespace MalikP.GitHub.LabelSynchronizer
 
             _logger.WriteLog("Specify personal oauth token with rights", ConsoleColor.Cyan);
             _logger.WriteLog($"{"".PadLeft(7, ' ')}-token=<personalToken>", ConsoleColor.Green);
+
+            _logger.WriteLog("Specify if synchronization will be strict or not. This means if also can delete labels or only create or update", ConsoleColor.Cyan);
+            _logger.WriteLog($"{"".PadLeft(7, ' ')}-strict=<true|false>", ConsoleColor.Green);
 
             _logger.WriteLog("Specify organization where you want to sync labels", ConsoleColor.Cyan);
             _logger.WriteLog($"{"".PadLeft(7, ' ')}-source-org=<OrganisationName>", ConsoleColor.Green);

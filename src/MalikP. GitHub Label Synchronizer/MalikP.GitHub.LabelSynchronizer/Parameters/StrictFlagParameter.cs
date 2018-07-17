@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2018 Peter M.
 // 
-// File: ISynchronizer.cs 
+// File: StrictFlagParameter.cs 
 // Company: MalikP.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
@@ -22,16 +22,12 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System.Threading.Tasks;
-using MalikP.GitHub.LabelSynchronizer.Parameters;
-
-namespace MalikP.GitHub.LabelSynchronizer.Synchronization
+namespace MalikP.GitHub.LabelSynchronizer.Parameters
 {
-    public interface ISynchronizer
+    public sealed class StrictFlagParameter : Parameter<bool>
     {
-        Task SynchronizeAsync(OrganizationNameParameter organizationLoginNameParameter, RepositoryNameParameter repositoryNameParameter, StrictFlagParameter strictFlagParameter);
-        Task SynchronizeAsync(OrganizationNameParameter sourceOrganizationLoginNameParameter, RepositoryNameParameter sourceRepositoryNameParameter, OrganizationNameParameter targetOrganizationLoginNameParameter, RepositoryNameParameter targetRepositoryNameParameter, StrictFlagParameter strictFlagParameter);
+        public StrictFlagParameter(bool value) : base(value)
+        {
+        }
     }
 }
-
-
