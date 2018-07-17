@@ -24,6 +24,7 @@ Open command prompt and execute with **all** parameters.
 
 ## Parameters
 `-uri=` - this parameter defines GitHub server Uri <br/>
+`-strict=` - this parameter defines if synchronization will be strict or not. Strict means that synchronizer will delete, update, create labels<br/>
 `-token=` - this parameter defines personal access token <br/>
 `-source-org=` - defines organization name in which reference repository is created <br/>
 `-source-repo=` - defines name of reference repository used as label source <br/>

@@ -39,31 +39,42 @@ namespace MalikP.GitHub.LabelSynchronizer.Synchronization
         {
         }
 
-        public override async Task SynchronizeAsync(OrganizationNameParameter organizationLoginNameParameter, RepositoryNameParameter repositoryNameParameter)
+        public override async Task SynchronizeAsync(OrganizationNameParameter organizationLoginNameParameter,
+                                                    RepositoryNameParameter repositoryNameParameter,
+                                                    StrictFlagParameter strictFlagParameter)
         {
             Repository sourceRepository = await GitHubClient.Repository.Get(organizationLoginNameParameter.Value, repositoryNameParameter.Value);
-            IReadOnlyList<Label> currentRepositoryLabels = await GetRepositoryLabels(sourceRepository);
+            IReadOnlyList<Label> currentRepositoryLabels = await GetRepositoryLabelsAsync(sourceRepository);
 
             if (currentRepositoryLabels != null && currentRepositoryLabels.Any())
             {
                 Organization organization = await GitHubClient.Organization
                                                               .Get(organizationLoginNameParameter.Value);
 
-                IReadOnlyList<Repository> repositories = await GetRepositories(sourceRepository, organization);
+                IReadOnlyList<Repository> repositories = await GetRepositoriesAsync(sourceRepository, organization);
                 foreach (Repository repositoryItem in repositories)
                 {
-                    IReadOnlyList<Label> repoItemlabels = await GetRepositoryLabels(repositoryItem);
+                    List<Label> repoItemlabels = (await GetRepositoryLabelsAsync(repositoryItem)).ToList();
 
                     foreach (Label labelItem in currentRepositoryLabels)
                     {
                         Label existingLabel = repoItemlabels.SingleOrDefault(label => label.Name == labelItem.Name);
                         if (existingLabel != null)
                         {
-                            await UpdateLabel(repositoryItem, labelItem);
+                            repoItemlabels.Remove(existingLabel);
+                            await UpdateLabelAsync(repositoryItem, labelItem);
                             continue;
                         }
 
-                        await CreateNewLabel(repositoryItem, labelItem);
+                        await CreateNewLabelAsync(repositoryItem, labelItem);
+                    }
+
+                    if (strictFlagParameter != null && strictFlagParameter.Value && repoItemlabels.Any())
+                    {
+                        foreach (var label in repoItemlabels)
+                        {
+                            await DeleteLabel(repositoryItem, label);
+                        }
                     }
                 }
             }
@@ -71,7 +82,11 @@ namespace MalikP.GitHub.LabelSynchronizer.Synchronization
             WriteLog($"Synchronization of labels from source repo: '{sourceRepository.Id} - {sourceRepository.Name}'", ConsoleColor.DarkYellow);
         }
 
-        public override async Task SynchronizeAsync(OrganizationNameParameter sourceOrganizationLoginNameParameter, RepositoryNameParameter sourceRepositoryNameParameter, OrganizationNameParameter targetOrganizationLoginNameParameter, RepositoryNameParameter targetRepositoryNameParameter)
+        public override async Task SynchronizeAsync(OrganizationNameParameter sourceOrganizationLoginNameParameter,
+                                                    RepositoryNameParameter sourceRepositoryNameParameter,
+                                                    OrganizationNameParameter targetOrganizationLoginNameParameter,
+                                                    RepositoryNameParameter targetRepositoryNameParameter,
+                                                    StrictFlagParameter strictFlagParameter)
         {
             if (string.Equals(sourceRepositoryNameParameter.Value, targetRepositoryNameParameter.Value))
             {
@@ -82,8 +97,8 @@ namespace MalikP.GitHub.LabelSynchronizer.Synchronization
             Repository sourceRepository = await GitHubClient.Repository.Get(sourceOrganizationLoginNameParameter.Value, sourceRepositoryNameParameter.Value);
             Repository targetRepository = await GitHubClient.Repository.Get(targetOrganizationLoginNameParameter.Value, targetRepositoryNameParameter.Value);
 
-            IReadOnlyList<Label> sourceRepositoryLabels = await GetRepositoryLabels(sourceRepository);
-            IReadOnlyList<Label> targetRepositoryLabels = await GetRepositoryLabels(targetRepository);
+            IReadOnlyList<Label> sourceRepositoryLabels = await GetRepositoryLabelsAsync(sourceRepository);
+            List<Label> targetRepositoryLabels = (await GetRepositoryLabelsAsync(targetRepository)).ToList();
 
             if (sourceRepositoryLabels.Any())
             {
@@ -92,18 +107,28 @@ namespace MalikP.GitHub.LabelSynchronizer.Synchronization
                     Label existingLabel = targetRepositoryLabels.SingleOrDefault(label => label.Name == labelItem.Name);
                     if (existingLabel != null)
                     {
-                        await UpdateLabel(targetRepository, labelItem);
+                        targetRepositoryLabels.Remove(existingLabel);
+                        await UpdateLabelAsync(targetRepository, labelItem);
                         continue;
                     }
 
-                    await CreateNewLabel(targetRepository, labelItem);
+                    await CreateNewLabelAsync(targetRepository, labelItem);
+                }
+
+                if (strictFlagParameter != null && strictFlagParameter.Value && targetRepositoryLabels.Any())
+                {
+                    foreach (var label in targetRepositoryLabels)
+                    {
+                        await DeleteLabel(targetRepository, label);
+                    }
                 }
             }
 
             WriteLog($"Synchronization of labels from source repo: '{sourceRepository.Id} - {sourceRepository.Name}'", ConsoleColor.DarkYellow);
         }
 
-        private async Task<IReadOnlyList<Repository>> GetRepositories(Repository repository, Organization organization)
+
+        private async Task<IReadOnlyList<Repository>> GetRepositoriesAsync(Repository repository, Organization organization)
         {
             IReadOnlyList<Repository> repositories = await GitHubClient.Repository
                                                                        .GetAllForUser(organization.Name, ApiOptions.None);
@@ -112,14 +137,14 @@ namespace MalikP.GitHub.LabelSynchronizer.Synchronization
                                .ToList();
         }
 
-        private Task<IReadOnlyList<Label>> GetRepositoryLabels(Repository repoItem)
+        private Task<IReadOnlyList<Label>> GetRepositoryLabelsAsync(Repository repoItem)
         {
             return GitHubClient.Issue
                                .Labels
                                .GetAllForRepository(repoItem.Id);
         }
 
-        private async Task CreateNewLabel(Repository repoItem, Label labelItem)
+        private async Task CreateNewLabelAsync(Repository repoItem, Label labelItem)
         {
             NewLabel newLabel = new NewLabel(labelItem.Name, labelItem.Color)
             {
@@ -134,7 +159,7 @@ namespace MalikP.GitHub.LabelSynchronizer.Synchronization
             WriteLog($"Created label {labelItem.Name} with Color: #{labelItem.Color} in Repo: {repoItem.Name}", ConsoleColor.Green);
         }
 
-        private async Task UpdateLabel(Repository repoItem, Label labelItem)
+        private async Task UpdateLabelAsync(Repository repoItem, Label labelItem)
         {
             LabelUpdate labelUpdate = new LabelUpdate(labelItem.Name, labelItem.Color)
             {
@@ -147,6 +172,16 @@ namespace MalikP.GitHub.LabelSynchronizer.Synchronization
                               .ConfigureAwait(false);
 
             WriteLog($"Updated label {labelItem.Name} in Repo: {repoItem.Name}", ConsoleColor.Cyan);
+        }
+
+        private async Task DeleteLabel(Repository repository, Label labelItem)
+        {
+            await GitHubClient.Issue
+                              .Labels
+                              .Delete(repository.Id, labelItem.Name)
+                              .ConfigureAwait(false);
+
+            WriteLog($"Deleted label {labelItem.Name} with Color: #{labelItem.Color} in Repo: {repository.Name}", ConsoleColor.Yellow);
         }
     }
 }
