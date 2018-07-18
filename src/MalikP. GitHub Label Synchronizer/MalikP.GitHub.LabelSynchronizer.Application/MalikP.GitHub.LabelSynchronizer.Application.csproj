@@ -3,6 +3,18 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <Version>0.1</Version>
+    <Authors>MalikP.</Authors>
+    <Company>MalikP.</Company>
+    <Description>Imagine that you have lot of repositories in your account and you want to have in all repositories the same label names, descriptions and colors. You can prepare labels in one repository and then use this repository as reference one. This tool will synchronize these labels and create in all other organization repositories.</Description>
+    <Copyright>© 2018 MalikP. ALL RIGHTS RESERVED</Copyright>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/peterM/GitHub-Labels-Synchronizer/master/MIT-LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/peterM/GitHub-Labels-Synchronizer</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/peterM/GitHub-Labels-Synchronizer</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageReleaseNotes>- synchronize across one organization
+- synchronize from specific repository to specific repository in the same or different organization
+- strict synchronization: delete labels in target repository what are not in source repository</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
