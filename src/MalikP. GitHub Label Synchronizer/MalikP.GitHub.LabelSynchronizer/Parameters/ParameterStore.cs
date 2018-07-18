@@ -61,9 +61,10 @@ namespace MalikP.GitHub.LabelSynchronizer.Parameters
         private Task CreateStrictFlagParameterAsync(string[] args)
         {
             string strictFlag = ExtractParamValue(args, "-strict=");
-            if (!string.IsNullOrWhiteSpace(strictFlag))
+            bool strictFlagValue = false;
+            if (!string.IsNullOrWhiteSpace(strictFlag) && bool.TryParse(strictFlag, out strictFlagValue))
             {
-                _parameters.Add(new SourceOrganizationNameParameter(strictFlag));
+                _parameters.Add(new StrictFlagParameter(strictFlagValue));
             }
 
             return Task.CompletedTask;
@@ -158,7 +159,7 @@ namespace MalikP.GitHub.LabelSynchronizer.Parameters
         {
             bool result = false;
 
-            if (args.Length == 4 || args.Length == 5 || args.Length == 6)
+            if (args.Length == 4 || args.Length == 5 || args.Length == 6 || args.Length == 7)
             {
                 result = true;
             }
