@@ -29,7 +29,7 @@ namespace MalikP.GitHub.LabelSynchronizer.Synchronization
 {
     public interface ISynchronizer
     {
-        Task SynchronizeAsync(OrganizationNameParameter organizationLoginNameParameter, RepositoryNameParameter repositoryNameParameter, StrictFlagParameter strictFlagParameter);
+        Task SynchronizeAsync(OrganizationNameParameter sourceOrganizationNameParameter, RepositoryNameParameter repositoryNameParameter, OrganizationNameParameter targetOrganizationNameParameter, StrictFlagParameter strictFlagParameter);
         Task SynchronizeAsync(OrganizationNameParameter sourceOrganizationLoginNameParameter, RepositoryNameParameter sourceRepositoryNameParameter, OrganizationNameParameter targetOrganizationLoginNameParameter, RepositoryNameParameter targetRepositoryNameParameter, StrictFlagParameter strictFlagParameter);
     }
 }

@@ -39,14 +39,15 @@ namespace MalikP.GitHub.LabelSynchronizer.Synchronization
         {
         }
 
-        public override async Task SynchronizeAsync(OrganizationNameParameter organizationLoginNameParameter,
+        public override async Task SynchronizeAsync(OrganizationNameParameter sourceOrganizationNameParameter,
                                                     RepositoryNameParameter repositoryNameParameter,
+                                                    OrganizationNameParameter targetOrganizationNameParameter,
                                                     StrictFlagParameter strictFlagParameter)
         {
-            Repository sourceRepository = await GitHubClient.Repository.Get(organizationLoginNameParameter.Value, repositoryNameParameter.Value);
+            Repository sourceRepository = await GitHubClient.Repository.Get(sourceOrganizationNameParameter.Value, repositoryNameParameter.Value);
 
             Organization organization = await GitHubClient.Organization
-                                                              .Get(organizationLoginNameParameter.Value);
+                                                              .Get(targetOrganizationNameParameter.Value);
             IReadOnlyList<Repository> repositories = await GetRepositoriesAsync(sourceRepository, organization);
 
             await SynchronizeRepositoriesLabels(strictFlagParameter, sourceRepository, repositories);

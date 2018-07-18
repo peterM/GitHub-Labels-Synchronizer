@@ -14,13 +14,13 @@ Synchronizer working well for cloud `GitHub.com` and also for on-premise version
 Open command prompt and execute with **all** parameters.
 
 **_Example when we want synchronize labels across all organization repositories:_**
-> `MalikP.GitHub.LabelSynchronizer -uri=https://github.domain.com/ -token=<personalToken> -source-org=<OrganisationName> -source-repo=<RepositoryName>` 
+> `MalikP.GitHub.LabelSynchronizer -uri=https://github.domain.com/ -token=<personalToken> -source-org=<OrganisationName> -source-repo=<RepositoryName> [-target-org=<OrganisationName>] [-strict=<true|false>]` 
 
 **_Example when we want synchronize labels only in specific repository from specific repository:_**
-> `MalikP.GitHub.LabelSynchronizer -uri=https://github.domain.com/ -token=<personalToken> -source-org=<OrganisationName> -source-repo=<RepositoryName> -target-repo=<RepositoryName>` 
+> `MalikP.GitHub.LabelSynchronizer -uri=https://github.domain.com/ -token=<personalToken> -source-org=<OrganisationName> -source-repo=<RepositoryName> [-target-org=<OrganisationName>] -target-repo=<RepositoryName> [-strict=<true|false>]` 
 
 **_or when repositories are not in the same organization:_**
-> `MalikP.GitHub.LabelSynchronizer -uri=https://github.domain.com/ -token=<personalToken> -source-org=<OrganisationName> -source-repo=<RepositoryName> -target-org=<OrganisationName> -target-repo=<RepositoryName>` 
+> `MalikP.GitHub.LabelSynchronizer -uri=https://github.domain.com/ -token=<personalToken> -source-org=<OrganisationName> -source-repo=<RepositoryName> -target-org=<OrganisationName> -target-repo=<RepositoryName> [-strict=<true|false>]` 
 
 ## Parameters
 `-uri=` - this parameter defines GitHub server Uri <br/>

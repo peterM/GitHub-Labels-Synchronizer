@@ -42,17 +42,20 @@ namespace MalikP.GitHub.LabelSynchronizer
             {
                 ISynchronizer Synchronizer = new DefaultSynchronizer(_logger, await parameterStore.QueryParameterAsync<UriParameter>(), await parameterStore.QueryParameterAsync<OautTokenParameter>());
 
+                OrganizationNameParameter sourceOrganizationNameParameter = await parameterStore.QueryParameterAsync<SourceOrganizationNameParameter>();
+                OrganizationNameParameter targetOrganizationParameter = await parameterStore.QueryParameterAsync<TargetOrganizationNameParameter>() ?? sourceOrganizationNameParameter;
+
+                SourceRepositoryNameParameter sourceRepositoryNameParameter = await parameterStore.QueryParameterAsync<SourceRepositoryNameParameter>();
                 TargetRepositoryNameParameter targetRepositoryNameParameter = await parameterStore.QueryParameterAsync<TargetRepositoryNameParameter>();
+
                 StrictFlagParameter strictFlagParameter = await parameterStore.QueryParameterAsync<StrictFlagParameter>();
 
                 if (targetRepositoryNameParameter == null)
                 {
-                    await Synchronizer.SynchronizeAsync(await parameterStore.QueryParameterAsync<OrganizationNameParameter>(), await parameterStore.QueryParameterAsync<SourceRepositoryNameParameter>(), strictFlagParameter);
+                    await Synchronizer.SynchronizeAsync(sourceOrganizationNameParameter, sourceRepositoryNameParameter, targetOrganizationParameter, strictFlagParameter);
                 }
                 else
                 {
-                    var sourceOrganizationNameParameter = await parameterStore.QueryParameterAsync<SourceOrganizationNameParameter>();
-                    OrganizationNameParameter targetOrganizationParameter = (OrganizationNameParameter)await parameterStore.QueryParameterAsync<TargetOrganizationNameParameter>() ?? sourceOrganizationNameParameter;
                     await Synchronizer.SynchronizeAsync(sourceOrganizationNameParameter, await parameterStore.QueryParameterAsync<SourceRepositoryNameParameter>(), targetOrganizationParameter, targetRepositoryNameParameter, strictFlagParameter);
                 }
             }
@@ -91,15 +94,15 @@ namespace MalikP.GitHub.LabelSynchronizer
 
             _logger.WriteLog("", ConsoleColor.Green);
             _logger.WriteLog("Example when we want synchronize labels across all organization repositories: ", ConsoleColor.Cyan);
-            _logger.WriteLog($"{"".PadLeft(7, ' ')} MalikP.GitHub.LabelSynchronizer -uri=https://github.domain.com/ -token=<personalToken> -source-org=<OrganisationName> -source-repo=<RepositoryName>", ConsoleColor.Green);
+            _logger.WriteLog($"{"".PadLeft(7, ' ')} MalikP.GitHub.LabelSynchronizer -uri=https://github.domain.com/ -token=<personalToken> -source-org=<OrganisationName> -source-repo=<RepositoryName> [-target-org=<OrganisationName>] [-strict=<true|false>]", ConsoleColor.Green);
 
             _logger.WriteLog("", ConsoleColor.Green);
             _logger.WriteLog("Example when we want synchronize labels only in specific repository from specific repository: ", ConsoleColor.Cyan);
-            _logger.WriteLog($"{"".PadLeft(7, ' ')} MalikP.GitHub.LabelSynchronizer -uri=https://github.domain.com/ -token=<personalToken> -source-org=<OrganisationName> -source-repo=<RepositoryName> -target-repo=<RepositoryName>", ConsoleColor.Green);
+            _logger.WriteLog($"{"".PadLeft(7, ' ')} MalikP.GitHub.LabelSynchronizer -uri=https://github.domain.com/ -token=<personalToken> -source-org=<OrganisationName> -source-repo=<RepositoryName> [-target-org=<OrganisationName>] -target-repo=<RepositoryName> [-strict=<true|false>]", ConsoleColor.Green);
 
             _logger.WriteLog("", ConsoleColor.Green);
             _logger.WriteLog("Example when we want synchronize labels only in specific repository from specific repository and both are in different organizations: ", ConsoleColor.Cyan);
-            _logger.WriteLog($"{"".PadLeft(7, ' ')} MalikP.GitHub.LabelSynchronizer -uri=https://github.domain.com/ -token=<personalToken> -source-org=<OrganisationName> -source-repo=<RepositoryName> -target-org=<OrganisationName> -target-repo=<RepositoryName>", ConsoleColor.Green);
+            _logger.WriteLog($"{"".PadLeft(7, ' ')} MalikP.GitHub.LabelSynchronizer -uri=https://github.domain.com/ -token=<personalToken> -source-org=<OrganisationName> -source-repo=<RepositoryName> -target-org=<OrganisationName> -target-repo=<RepositoryName> [-strict=<true|false>]", ConsoleColor.Green);
 
             _logger.WriteLog($"{"".PadLeft(86, '#')}", ConsoleColor.Red);
 
