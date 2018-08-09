@@ -142,7 +142,7 @@ namespace MalikP.GitHub.LabelSynchronizer.Synchronization
         {
             LabelUpdate labelUpdate = new LabelUpdate(labelItem.Name, labelItem.Color)
             {
-                Description = labelItem.Color
+                Description = labelItem.Description
             };
 
             await GitHubClient.Issue
