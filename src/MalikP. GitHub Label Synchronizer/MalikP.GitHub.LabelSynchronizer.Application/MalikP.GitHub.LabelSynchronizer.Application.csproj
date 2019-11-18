@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <Version>0.2.0</Version>
     <Authors>MalikP.</Authors>
     <Company>MalikP.</Company>
@@ -12,6 +12,8 @@
     <PackageProjectUrl>https://github.com/peterM/GitHub-Labels-Synchronizer</PackageProjectUrl>
     <RepositoryUrl>https://github.com/peterM/GitHub-Labels-Synchronizer</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
+    <PublishTrimmed>true</PublishTrimmed>
+    <RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
     <PackageReleaseNotes>- synchronize across one organization
 - synchronize from specific repository to specific repository in the same or different organization
 - strict synchronization: delete labels in target repository what are not in source repository</PackageReleaseNotes>
